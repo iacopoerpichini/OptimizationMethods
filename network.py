@@ -1,11 +1,9 @@
 from __future__ import print_function
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
-from collections import OrderedDict
 
 
 class Net(nn.Module):
@@ -23,6 +21,9 @@ class Net(nn.Module):
         # indicate if the network module is created through training
         self.fitted = False
 
+        #set criterion
+        self.criterion=F.nll_loss
+
     def forward(self, x):
         in_size = x.size(0)
         x = F.relu(self.mp(self.conv1(x)))
@@ -38,7 +39,7 @@ class Net(nn.Module):
                 data, target = Variable(data), Variable(target)
                 self.optimizer.zero_grad()
                 output = self(data)
-                train_loss = F.nll_loss(output, target)
+                train_loss = self.criterion(output, target)
                 train_loss.backward()
                 self.optimizer.step()
         self.fitted = True
@@ -48,37 +49,32 @@ class Net(nn.Module):
             exit(1)
         else:
 
-            validation_losses=[]
-            validation_accuracies=[]
-            validation_loss = 0.0
-            validation_num_minibatches = 0
-            validation_correct_predictions = 0
-            validation_examples = 0
+            correct = 0
+            total = 0
+            loss = 0.0
+            num_batches = 0
+            with torch.no_grad():
+                for data in validation_loader:
 
+                    # get some test images
+                    x, y = data
+                    # if self.gpu is not None:
+                    #     images, labels = images.to(self.device), labels.to(self.device)
 
-            for data, target in validation_loader:
-                data, target = Variable(data), Variable(target)
-                self.optimizer.zero_grad()
-                output = self.Net(data)
-                loss = F.nll_loss(output, target)
-                loss.backward()
-                self.optimizer.step()
+                    # images classes prediction
+                    outputs = self(x)
+                    _, predicted = torch.max(outputs.data, 1)
 
-                # validation_loss
-                validation_loss += loss.item()
-                validation_num_minibatches += 1
+                    # loss update
+                    loss += self.criterion(outputs, y).item()
+                    num_batches += 1
 
-                # calculate correct predictions for accuracy
-                _, predicted = torch.max(output.data, 1)
-                validation_examples += data.size(0)
-                validation_correct_predictions += (predicted == target).sum().item()
+                    # update numbers of total and correct predictions
+                    total += y.size(0)
+                    correct += (predicted == y).sum().item()
 
-
-        validation_loss /= validation_num_minibatches
-        validation_losses.append(validation_loss)
-        validation_accuracy = validation_correct_predictions / validation_examples
-        validation_accuracies.append(validation_accuracy)
-
-        return validation_accuracies,validation_losses
+            accuracy = correct / total
+            loss /= num_batches
+            return loss, accuracy
 
 
