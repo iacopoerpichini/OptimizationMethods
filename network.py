@@ -35,11 +35,11 @@ class Net(nn.Module):
     def fit(self, train_loader):
         self.train()
         for epochs in range(self.max_epochs):
-            for data, target in train_loader:
-                data, target = Variable(data), Variable(target)
+            for x, y in train_loader:
+                x, y = Variable(x), Variable(y)
                 self.optimizer.zero_grad()
-                output = self(data)
-                train_loss = self.criterion(output, target)
+                output = self(x)
+                train_loss = self.criterion(output, y)
                 train_loss.backward()
                 self.optimizer.step()
         self.fitted = True
