@@ -1,17 +1,27 @@
 from __future__ import print_function
+
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.optim as optim
+from torch.autograd import Variable
 from collections import OrderedDict
 
 
 class Net(nn.Module):
 
-    def __init__(self):
+    def __init__(self, learning_rate, weight_decay, epochs):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
         self.mp = nn.MaxPool2d(2)
         self.fc = nn.Linear(320, 10)
+
+        self.optimizer = optim.SGD(self.parameters(), lr=learning_rate, weight_decay=weight_decay)
+        self.max_epochs = epochs
+
+        # indicate if the network module is created through training
+        self.fitted = False
 
     def forward(self, x):
         in_size = x.size(0)
@@ -21,32 +31,54 @@ class Net(nn.Module):
         x = self.fc(x)
         return F.log_softmax(x, dim=1)
 
+    def fit(self, train_loader):
+        self.train()
+        for epochs in range(self.max_epochs):
+            for data, target in train_loader:
+                data, target = Variable(data), Variable(target)
+                self.optimizer.zero_grad()
+                output = self.Net(data)
+                train_loss = F.nll_loss(output, target)
+                train_loss.backward()
+                self.optimizer.step()
+        self.fitted = True
 
-class LeNet5(nn.Module):
-    def __init__(self):
-        super(LeNet5, self).__init__()
-        self.conv1 = nn.Conv2d(1, 6, (5, 5), padding=2)
-        self.conv2 = nn.Conv2d(6, 16, (5, 5))
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+    def validation(self, validation_loader):
+        if not self.fitted:
+            exit(1)
+        else:
 
-    def forward(self, x):
-        x = F.max_pool2d(F.relu(self.conv1(x)), (2, 2))
-        x = F.max_pool2d(F.relu(self.conv2(x)), (2, 2))
-        x = x.view(-1, self.num_flat_features(x))
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return F.log_softmax(x, dim=1)
+            validation_losses=[]
+            validation_accuracies=[]
+            validation_loss = 0.0
+            validation_num_minibatches = 0
+            validation_correct_predictions = 0
+            validation_examples = 0
 
-    def num_flat_features(self, x):
-        size = x.size()[1:]
-        num_features = 1
-        for s in size:
-            num_features *= s
-        return num_features
 
-if __name__ == '__main__':
-    model = LeNet5()
-    print(model)
+            for data, target in validation_loader:
+                data, target = Variable(data), Variable(target)
+                self.optimizer.zero_grad()
+                output = self.Net(data)
+                loss = F.nll_loss(output, target)
+                loss.backward()
+                self.optimizer.step()
+
+                # validation_loss
+                validation_loss += loss.item()
+                validation_num_minibatches += 1
+
+                # calculate correct predictions for accuracy
+                _, predicted = torch.max(output.data, 1)
+                validation_examples += data.size(0)
+                validation_correct_predictions += (predicted == target).sum().item()
+
+
+        validation_loss /= validation_num_minibatches
+        validation_losses.append(validation_loss)
+        validation_accuracy = validation_correct_predictions / validation_examples
+        validation_accuracies.append(validation_accuracy)
+
+        return validation_accuracies,validation_losses
+
+
