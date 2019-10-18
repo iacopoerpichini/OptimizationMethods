@@ -12,7 +12,7 @@ import dataset_management
 if __name__ == '__main__':
     train_loader, validation_loader, test_loader = dataset_management.getDataset(validation=True,dataset_name='mnist')
 
-    model=Net()
+    model=Net(0.1,0.2,50)
 
     # train_loader, test_loader, validation_loader = dataset_menagement.getDataset(validation=Treu, dataset_name='cifar10')
     for epoch in range(1, 10):

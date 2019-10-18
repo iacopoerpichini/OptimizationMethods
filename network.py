@@ -37,7 +37,7 @@ class Net(nn.Module):
             for data, target in train_loader:
                 data, target = Variable(data), Variable(target)
                 self.optimizer.zero_grad()
-                output = self.Net(data)
+                output = self(data)
                 train_loss = F.nll_loss(output, target)
                 train_loss.backward()
                 self.optimizer.step()
