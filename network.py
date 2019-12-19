@@ -8,7 +8,7 @@ from torch.autograd import Variable
 
 class Net(nn.Module):
 
-    def __init__(self, learning_rate, weight_decay, epochs):
+    def __init__(self, learning_rate, weight_decay, epochs, gpu):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
@@ -22,7 +22,13 @@ class Net(nn.Module):
         self.fitted = False
 
         #set criterion
-        self.criterion=F.nll_loss
+        self.criterion = F.nll_loss
+
+        # selection of device to use
+        self.device = torch.device("cuda:" + str(gpu) if torch.cuda.is_available() and gpu is not None else "cpu")
+        self.gpu = gpu
+        if self.device == "cpu":
+            self.gpu = None
 
     def forward(self, x):
         in_size = x.size(0)
@@ -35,31 +41,32 @@ class Net(nn.Module):
     def fit(self, train_loader):
         self.train()
         for epochs in range(self.max_epochs):
-            for x, y in train_loader:
-                x, y = Variable(x), Variable(y)
+            for data in train_loader:
+                x,y=data
+                if self.gpu is not None:
+                    x, y = x.to(self.device), y.to(self.device)
                 self.optimizer.zero_grad()
                 output = self(x)
                 train_loss = self.criterion(output, y)
                 train_loss.backward()
                 self.optimizer.step()
         self.fitted = True
+        return train_loss
 
     def validation(self, validation_loader):
         if not self.fitted:
             exit(1)
         else:
-
             correct = 0
             total = 0
             loss = 0.0
             num_batches = 0
             with torch.no_grad():
                 for data in validation_loader:
-
                     # get some test images
                     x, y = data
-                    # if self.gpu is not None:
-                    #     images, labels = images.to(self.device), labels.to(self.device)
+                    if self.gpu is not None:
+                        x, y = x.to(self.device), y.to(self.device)
 
                     # images classes prediction
                     outputs = self(x)
