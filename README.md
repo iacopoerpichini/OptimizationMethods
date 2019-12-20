@@ -6,6 +6,8 @@ The aim of this project is to test algorithms for hyperparameters global optimiz
 + install pytorch `https://pytorch.org/tutorials/`
 + install these Python packages: bayesian-optimization, tensorboardX 
 + eg. `pip install tensorboardX`
++ install Optunity: `git clone https://github.com/claesenm/optunity.git'`
+`pip install optunity`
 
 ## Usage
 + download the project:

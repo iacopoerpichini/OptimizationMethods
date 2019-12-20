@@ -83,5 +83,3 @@ class Net(nn.Module):
             accuracy = correct / total
             loss /= num_batches
             return loss, accuracy
-
-
