@@ -8,7 +8,7 @@ from datetime import datetime
 
 # param for experiment
 output_file = 'result.csv'
-num_evaluations = 10
+num_evaluations = 25
 init_points_BAY = 5
 
 # hyperparameters domains

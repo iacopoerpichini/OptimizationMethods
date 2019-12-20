@@ -6,7 +6,7 @@ import optunity
 import csv
 
 # param for experiment
-max_epochs = 10
+max_epochs = 30
 output_file = 'result.csv'
 # gpu id
 gpu = 0
@@ -15,6 +15,7 @@ gpu = 0
 def evaluate_BAY(learning_rate, weight_decay):
     device = torch.device("cuda:" + str(gpu) if torch.cuda.is_available() else "cpu")
     model = Net(learning_rate, weight_decay, max_epochs,gpu).to(device)
+    # here is possible to select MNIST of CIFAR10 dataset
     train_loader, validation_loader, test_loader = dataset_management.getDataset(validation=True, dataset_name='mnist')
     training_losses = model.fit(train_loader)
     validation_losses, validation_accuracy = model.validation(test_loader)
