@@ -8,8 +8,8 @@ from datetime import datetime
 
 # param for experiment
 output_file = 'result.csv'
-num_evaluations = 3
-init_points_BAY = 1
+num_evaluations = 25
+init_points_BAY = 5
 
 # hyperparameters domains
 hyp_domains = {"learning_rate": (0.0001, 0.1), "weight_decay": (0, 0.001)}
