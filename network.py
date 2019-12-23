@@ -35,6 +35,8 @@ class Net(nn.Module):
         #reset all parameters for Conv2d layer
         if isinstance(m, nn.Conv2d):
             m.reset_parameters()
+            m.weight.data.fill_(0.01)
+            m.bias.data.fill_(0.01)
         #reset all parameters for Linear layer
         if isinstance(m, nn.Linear):
             m.weight.data.fill_(0.01)
