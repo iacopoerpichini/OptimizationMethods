@@ -10,10 +10,10 @@ class Net(nn.Module):
 
     def __init__(self, learning_rate, weight_decay, epochs, gpu):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
+        self.conv1 = nn.Conv2d(3, 10, kernel_size=5)
         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
         self.mp = nn.MaxPool2d(2)
-        self.fc = nn.Linear(320, 10)
+        self.fc = nn.Linear(500, 10)
 
         self.optimizer = optim.SGD(self.parameters(), lr=learning_rate, weight_decay=weight_decay)
         self.max_epochs = epochs
@@ -30,6 +30,19 @@ class Net(nn.Module):
         if self.device == "cpu":
             self.gpu = None
 
+    #FIXME eventualmente ricontrollare
+    def init_net(self, m):
+        #reset all parameters for Conv2d layer
+        if isinstance(m, nn.Conv2d):
+            m.reset_parameters()
+        #reset all parameters for Linear layer
+        if isinstance(m, nn.Linear):
+            m.weight.data.fill_(0.01)
+            m.bias.data.fill_(0.01)
+
+    def reset_parameters(self):
+        self.apply(self.init_net)
+
     def forward(self, x):
         in_size = x.size(0)
         x = F.relu(self.mp(self.conv1(x)))
@@ -39,8 +52,11 @@ class Net(nn.Module):
         return F.log_softmax(x, dim=1)
 
     def fit(self, train_loader):
+        # reset parameters for all test
+        self.reset_parameters()
         self.train()
         for epochs in range(self.max_epochs):
+            print('epochs: '+ epochs.__str__())
             for data in train_loader:
                 x,y=data
                 if self.gpu is not None:

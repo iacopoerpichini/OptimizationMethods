@@ -16,7 +16,7 @@ def evaluate_BAY(learning_rate, weight_decay):
     device = torch.device("cuda:" + str(gpu) if torch.cuda.is_available() else "cpu")
     model = Net(learning_rate, weight_decay, max_epochs,gpu).to(device)
     # here is possible to select MNIST of CIFAR10 dataset
-    train_loader, validation_loader, test_loader = dataset_management.getDataset(validation=True, dataset_name='mnist')
+    train_loader, validation_loader, test_loader = dataset_management.getDataset(validation=True, dataset_name='cifar10')
     training_losses = model.fit(train_loader)
     validation_losses, validation_accuracy = model.validation(test_loader)
     best_val_loss = validation_losses
