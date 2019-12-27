@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.autograd import Variable
 
 
 class Net(nn.Module):
@@ -35,8 +34,8 @@ class Net(nn.Module):
         #reset all parameters for Conv2d layer
         if isinstance(m, nn.Conv2d):
             m.reset_parameters()
-            m.weight.data.fill_(0.01)
-            m.bias.data.fill_(0.01)
+            # m.weight.data.fill_(0.01)
+            # m.bias.data.fill_(0.01)
         #reset all parameters for Linear layer
         if isinstance(m, nn.Linear):
             m.weight.data.fill_(0.01)
@@ -58,7 +57,8 @@ class Net(nn.Module):
         self.reset_parameters()
         self.train()
         for epochs in range(self.max_epochs):
-            print('epochs: '+ epochs.__str__())
+            # debug print
+            # print('epochs: '+ epochs.__str__())
             for data in train_loader:
                 x,y=data
                 if self.gpu is not None:

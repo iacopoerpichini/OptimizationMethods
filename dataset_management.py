@@ -1,22 +1,7 @@
-import sys
 import torch
 import torchvision
 from torch.utils.data import sampler
 import torchvision.transforms as transforms
-
-
-class Logger:
-    def __init__(self, log_file):
-        self.terminal = sys.stdout
-        self.log = open(log_file, "a")
-
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)
-
-    def flush(self):
-        pass
-
 
 class ChunkSampler(sampler.Sampler):
     """Samples elements sequentially from some offset.
