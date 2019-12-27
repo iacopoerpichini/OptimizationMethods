@@ -13,4 +13,4 @@ The aim of this project is to test algorithms for hyperparameters global optimiz
 `git clone https://github.com/iacopoerpichini/OptimizationMethods.git`
 + enter in the project directory:
 `cd OptimizationMethods`
-+ (modify and) run: `optimization.py`
++ (modify and) run: `test.py`
