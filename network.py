@@ -59,13 +59,13 @@ class Net(nn.Module):
         for epochs in range(self.max_epochs):
             # debug print
             # print('epochs: '+ epochs.__str__())
-            for data in train_loader:
-                x,y=data
+            for batch in train_loader:
+                data,target=batch
                 if self.gpu is not None:
-                    x, y = x.to(self.device), y.to(self.device)
+                    data, target = data.to(self.device), target.to(self.device)
                 self.optimizer.zero_grad()
-                output = self(x)
-                train_loss = self.criterion(output, y)
+                output = self(data)
+                train_loss = self.criterion(output, target)
                 train_loss.backward()
                 self.optimizer.step()
         self.fitted = True
@@ -80,23 +80,23 @@ class Net(nn.Module):
             loss = 0.0
             num_batches = 0
             with torch.no_grad():
-                for data in validation_loader:
+                for batch in validation_loader:
                     # get some test images
-                    x, y = data
+                    data, target = batch
                     if self.gpu is not None:
-                        x, y = x.to(self.device), y.to(self.device)
+                        data, target = data.to(self.device), target.to(self.device)
 
                     # images classes prediction
-                    outputs = self(x)
+                    outputs = self(data)
                     _, predicted = torch.max(outputs.data, 1)
 
                     # loss update
-                    loss += self.criterion(outputs, y).item()
+                    loss += self.criterion(outputs, target).item()
                     num_batches += 1
 
                     # update numbers of total and correct predictions
-                    total += y.size(0)
-                    correct += (predicted == y).sum().item()
+                    total += target.size(0)
+                    correct += (predicted == target).sum().item()
 
             accuracy = correct / total
             loss /= num_batches
