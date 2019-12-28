@@ -10,7 +10,7 @@ import optunity
 output_file = 'result.csv'
 evaluations = 25
 init_points = 5
-max_epochs = 20
+max_epochs = 50
 dataset_name= 'cifar10' # mnist
 # gpu id for colab or gpu on pc
 gpu = 0
@@ -61,8 +61,7 @@ if __name__ == '__main__':
     print(result_bay)
 
     with open(output_file, 'a') as file:
-        myCsvRow = result_bay+'\n'
-        file.write(myCsvRow)
+        file.write(result_bay + '\n')
 
     print('------------')
 
@@ -76,8 +75,7 @@ if __name__ == '__main__':
     print(result_qr)
 
     with open(output_file, 'a') as file:
-        myCsvRow = result_qr
-        file.write(myCsvRow)
+        file.write(result_qr+'\n')
 
 
 
