@@ -1,6 +1,6 @@
 # Optimization Methods
 
-The aim of this project is to test algorithms for hyperparameters global optimization based on Bayesian global optimization for study the result on a simple Convolution Neural Network LeNet5 inspired. 
+The aim of this project is to test algorithms for hyperparameters global optimization based on Bayesian global optimization and Quasi Random for study the result on a simple Convolution Neural Network LeNet5 inspired. 
 
 ## System requirements
 + install pytorch `https://pytorch.org/tutorials/`
