@@ -111,8 +111,11 @@ class Net(nn.Module):
 
 # this main is only for see the network structure
 if __name__ == '__main__':
-
+    dataset_name = 'cifar10'
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = Net(learning_rate=0.0001, weight_decay=0.01, epochs=30, gpu=0).to(device)
+    model = Net(learning_rate=0.0001, weight_decay=0.01, epochs=30, gpu=0,dataset_name=dataset_name).to(device)
 
-    summary(model, (3, 32, 32))
+    if dataset_name == 'mnist':
+        summary(model, (1, 28, 28))
+    if dataset_name == 'cifar10':
+        summary(model, (3, 32, 32))
