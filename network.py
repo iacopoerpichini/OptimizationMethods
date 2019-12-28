@@ -3,16 +3,23 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torchsummary import summary
 
 
 class Net(nn.Module):
 
-    def __init__(self, learning_rate, weight_decay, epochs, gpu):
+    def __init__(self, learning_rate, weight_decay, epochs, gpu, dataset_name):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 10, kernel_size=5)
+
+        self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
+        if dataset_name == 'cifar10':
+            self.conv1 = nn.Conv2d(3, 10, kernel_size=5)
+
         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
         self.mp = nn.MaxPool2d(2)
-        self.fc = nn.Linear(500, 10)
+        self.fc = nn.Linear(320, 10)
+        if dataset_name == 'cifar10':
+            self.fc = nn.Linear(500, 10)
 
         self.optimizer = optim.SGD(self.parameters(), lr=learning_rate, weight_decay=weight_decay)
         self.max_epochs = epochs
@@ -101,3 +108,11 @@ class Net(nn.Module):
             accuracy = correct / total
             loss /= num_batches
             return loss, accuracy
+
+# this main is only for see the network structure
+if __name__ == '__main__':
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    model = Net(learning_rate=0.0001, weight_decay=0.01, epochs=30, gpu=0).to(device)
+
+    summary(model, (3, 32, 32))
