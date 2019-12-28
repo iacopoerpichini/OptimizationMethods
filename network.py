@@ -65,7 +65,7 @@ class Net(nn.Module):
         self.train()
         for epochs in range(self.max_epochs):
             # debug print
-            # print('epochs: '+ epochs.__str__())
+            print('epochs: '+ epochs.__str__())
             for batch in train_loader:
                 data,target=batch
                 if self.gpu is not None:
