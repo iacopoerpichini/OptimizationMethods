@@ -11,6 +11,7 @@ output_file = 'result.csv'
 evaluations = 25
 init_points = 5
 max_epochs = 50
+# here is possible to select MNIST of CIFAR10 dataset
 dataset_name= 'cifar10' # mnist
 # gpu id for colab or gpu on pc
 gpu = 0
@@ -22,7 +23,6 @@ hyperparameters = {'learning_rate': (0.0001, 0.1), 'weight_decay': (0, 0.001)}
 def evaluate(learning_rate, weight_decay):
     device = torch.device('cuda:' + gpu.__str__() if torch.cuda.is_available() else 'cpu')
     model = Net(learning_rate, weight_decay, max_epochs, gpu, dataset_name=dataset_name).to(device)
-    # here is possible to select MNIST of CIFAR10 dataset
     train_loader, validation_loader, test_loader = dataset_management.getDataset(validation=True, dataset_name=dataset_name)
     training_losses = model.fit(train_loader)
     validation_losses, validation_accuracy = model.validation(test_loader)
